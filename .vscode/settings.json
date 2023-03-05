@@ -1,6 +1,0 @@
-{
-    "files.associations": {
-        "curses.h": "c",
-        "termios.h": "c"
-    }
-}
