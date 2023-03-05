@@ -1,5 +1,3 @@
-// Run with: cd "/Users/tonibahcic/Private/c-lang/" && gcc lazy-snake.c  -lcurses -o lazy-snake && "/Users/tonibahcic/Private/c-lang/"lazy-snake
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -10,7 +8,7 @@
 #define SNAKE_MAX_LENGHT 100
 #define COO_9999 9999
 
-#define DEFAULT_GRID '.'
+#define DEFAULT_GRID ' '
 #define SNAKE_HEAD 'O'
 #define SNAKE_TAIL 'o'
 #define CANDY '*'
@@ -41,7 +39,7 @@ int isCandyHere(int x, int y);
 void readInput();
 int willHitNeck(int x, int y);
 int willHitTail(int x, int y);
-void moveHead();
+int moveHead();
 void moveTail();
 void checkCandy();
 
@@ -140,10 +138,46 @@ void readInput() {
         return;
     }
 
-    moveHead(COMMAND);
+    int success = 1;
+
+    success = moveHead(COMMAND);
+    if (!success) return;
+
     moveTail();
 
     clear();
+}
+
+int moveHead() {
+    int wantedX = HEAD_X;
+    int wantedY = HEAD_Y;
+    
+    // Adjust head
+    if (COMMAND == 'A') wantedY++;
+    if (COMMAND == 'B') wantedY--;
+    if (COMMAND == 'C') wantedX++;
+    if (COMMAND == 'D') wantedX--;
+
+    if (willHitNeck(wantedX, wantedY)) {
+        clear();
+        return 0;
+    } else if (willHitTail(wantedX, wantedY)) {
+        clear();
+        GAME_IN_PROGRESS = 0;
+        return 0;
+    } else {
+        HEAD_X = wantedX;
+        HEAD_Y = wantedY;
+    }
+
+
+    // Portal mode
+    if (HEAD_X == WIDTH) HEAD_X = 0;
+    if (HEAD_X < 0) HEAD_X = WIDTH - 1;
+    if (HEAD_Y == HEIGHT) HEAD_Y = 0;
+    if (HEAD_Y < 0) HEAD_Y = HEIGHT - 1;
+
+    return 1;
 }
 
 int willHitNeck(int x, int y) {
@@ -166,36 +200,6 @@ int willHitTail(int x, int y) {
     }
 
     return 0;
-}
-
-void moveHead() {
-    int wantedX = HEAD_X;
-    int wantedY = HEAD_Y;
-    
-    // Adjust head
-    if (COMMAND == 'A') wantedY++;
-    if (COMMAND == 'B') wantedY--;
-    if (COMMAND == 'C') wantedX++;
-    if (COMMAND == 'D') wantedX--;
-
-    if (willHitNeck(wantedX, wantedY)) {
-        clear();
-        return;
-    } else if (willHitTail(wantedX, wantedY)) {
-        clear();
-        GAME_IN_PROGRESS = 0;
-        return;
-    } else {
-        HEAD_X = wantedX;
-        HEAD_Y = wantedY;
-    }
-
-
-    // Portal mode
-    if (HEAD_X == WIDTH) HEAD_X = 0;
-    if (HEAD_X < 0) HEAD_X = WIDTH - 1;
-    if (HEAD_Y == HEIGHT) HEAD_Y = 0;
-    if (HEAD_Y < 0) HEAD_Y = HEIGHT - 1;
 }
 
 void moveTail() {
