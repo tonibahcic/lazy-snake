@@ -138,12 +138,8 @@ void readInput() {
         return;
     }
 
-    int success = 1;
-
-    success = moveHead(COMMAND);
-    if (!success) return;
-
-    moveTail();
+    int success = moveHead(COMMAND);
+    if (success) moveTail();
 
     clear();
 }
